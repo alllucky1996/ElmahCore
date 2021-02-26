@@ -3,6 +3,11 @@ This project is licensed under the terms of the Apache license 2.0.
 # Using ElmahCore
 ELMAH for Net.Standard and Net.Core 
 
+
+	Install-Package ElmahCore
+
+
+
 ![alt text](https://github.com/ElmahCore/ElmahCore/raw/master/images/elmah-new-ui.png)
 
 Add nuget package **elmahcore**
