@@ -70,6 +70,7 @@ namespace ElmahCore
         ///     Enable/Disable request body logging
         /// </summary>
         public bool LogRequestBody { get; set; } = true;
+        
 
         public virtual bool PermissionCheck(HttpContext context)
         {
@@ -80,5 +81,8 @@ namespace ElmahCore
         {
             return OnError(context, error);
         }
+        public ICollection<KeyValuePair<string, string>> ReplaceValue { get; set; } = new HashSet<KeyValuePair<string, string>>() {
+        new KeyValuePair<string, string>("ELMAH_NAME","Error list")
+        };
     }
 }

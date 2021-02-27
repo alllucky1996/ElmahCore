@@ -14,6 +14,9 @@ using Microsoft.Extensions.Options;
 
 namespace ElmahCore.Mvc
 {
+    /// <summary>
+    /// Error Log Middleware
+    /// </summary>
     internal sealed class ErrorLogMiddleware
     {
         public delegate void ErrorLoggedEventHandler(object sender, ErrorLoggedEventArgs args);
@@ -37,6 +40,7 @@ namespace ElmahCore.Mvc
 
         private readonly Func<HttpContext, bool> _checkPermissionAction = context => true;
         private readonly string _elmahRoot = @"/elmah";
+        private readonly ICollection<KeyValuePair<string, string>> _replaceValue;
         private readonly ErrorLog _errorLog;
         private readonly List<IErrorFilter> _filters = new List<IErrorFilter>();
         private readonly ILogger _logger;
@@ -95,6 +99,8 @@ namespace ElmahCore.Mvc
                 _errorLog.ApplicationName = elmahOptions.Value.ApplicationName;
             if (options.SourcePaths != null && options.SourcePaths.Any())
                 _errorLog.SourcePaths = elmahOptions.Value.SourcePaths;
+
+            _replaceValue = options.ReplaceValue;
         }
 
         public event ExceptionFilterEventHandler Filtering;
@@ -237,7 +243,7 @@ namespace ElmahCore.Mvc
                     case "test":
                         throw new TestException();
                     default:
-                        await ErrorResourceHandler.ProcessRequest(context, resource, _elmahRoot);
+                        await ErrorResourceHandler.ProcessRequest(context, resource, _elmahRoot, _replaceValue);
                         break;
                 }
             }
@@ -245,9 +251,9 @@ namespace ElmahCore.Mvc
             {
                 throw;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                _logger.LogError("Elmah request processing error");
+                _logger.LogError(ex, "Elmah request processing error");
             }
         }
 
