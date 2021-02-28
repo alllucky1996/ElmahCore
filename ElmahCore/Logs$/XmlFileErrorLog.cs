@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -71,23 +72,23 @@ namespace ElmahCore
 
             var timeStamp = error.Time > DateTime.MinValue ? error.Time : DateTime.Now;
 
-            var fileName = string.Format(CultureInfo.InvariantCulture,
-                @"error-{0:yyyy-MM-ddHHmmssZ}-{1}.xml",
-                /* 0 */ timeStamp.ToUniversalTime(),
-                /* 1 */ id);
+            var fileName = $"error-{timeStamp.ToString("yyyy-MM-ddHHmmss", CultureInfo.InvariantCulture)}-{id}.xml";
 
             var path = Path.Combine(logPath, fileName);
 
             try
             {
-                using var writer = new XmlTextWriter(path, Encoding.UTF8) {Formatting = Formatting.Indented};
+                using var writer = new XmlTextWriter(path, Encoding.UTF8) { Formatting = Formatting.Indented };
                 writer.WriteStartElement("error");
                 writer.WriteAttributeString("errorId", id.ToString());
                 ErrorXml.Encode(error, writer);
                 writer.WriteEndElement();
                 writer.Flush();
+                Debug.WriteLine($"Saved log: {path}");
+
+
             }
-            catch (IOException)
+            catch (IOException ex)
             {
                 // If an IOException is thrown during writing the file,
                 // it means that we will have an either empty or
@@ -95,7 +96,7 @@ namespace ElmahCore
                 // the file won't be valid and would cause an error in
                 // the UI.
                 File.Delete(path);
-                throw;
+                throw ex;
             }
         }
 
@@ -183,7 +184,7 @@ namespace ElmahCore
             using var reader = XmlReader.Create(file.FullName);
             return new ErrorLogEntry(this, id, ErrorXml.Decode(reader));
         }
-
+       
         private static bool IsUserFile(FileAttributes attributes)
         {
             return 0 == (attributes & (FileAttributes.Directory |

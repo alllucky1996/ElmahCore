@@ -40,7 +40,7 @@ namespace ElmahCore.Mvc
 
         private readonly Func<HttpContext, bool> _checkPermissionAction = context => true;
         private readonly string _elmahRoot = @"/elmah";
-        private readonly ICollection<KeyValuePair<string, string>> _replaceValue;
+        private readonly ISet<KeyValuePair<string, string>> _replaceValue;
         private readonly ErrorLog _errorLog;
         private readonly List<IErrorFilter> _filters = new List<IErrorFilter>();
         private readonly ILogger _logger;

@@ -23,4 +23,4 @@ ElmahCore.Postgresql/obj/**/*
 ElmahCore.MySql/bin/**/*
 ElmahCore.MySql/obj/**/*
 /.vs/ElmahCore
-/.vs
+/.vs/**/*

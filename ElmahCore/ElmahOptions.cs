@@ -81,7 +81,7 @@ namespace ElmahCore
         {
             return OnError(context, error);
         }
-        public ICollection<KeyValuePair<string, string>> ReplaceValue { get; set; } = new HashSet<KeyValuePair<string, string>>() {
+        public ISet<KeyValuePair<string, string>> ReplaceValue { get; set; } = new HashSet<KeyValuePair<string, string>>() {
         new KeyValuePair<string, string>("ELMAH_NAME","Error list")
         };
     }

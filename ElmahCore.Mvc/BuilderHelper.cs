@@ -52,6 +52,10 @@ namespace ElmahCore.Mvc
         {
             return AddElmah<MemoryErrorLog>(services, setupAction);
         }
+        public static IServiceCollection AddElmahXmlFile(this IServiceCollection services, Action<ElmahOptions> setupAction)
+        {
+            return AddElmah<XmlFileErrorLog>(services, setupAction);
+        }
 
         public static IServiceCollection AddElmah<T>(this IServiceCollection services, Action<ElmahOptions> setupAction)
             where T : ErrorLog
@@ -63,6 +67,23 @@ namespace ElmahCore.Mvc
             var builder = services.AddElmah<T>();
             builder.Configure(setupAction);
             return builder;
+        }
+        public static IServiceCollection AddElmah(this IServiceCollection services, Action<ElmahOptions> setupAction, params ErrorLog[] errorLogs)
+        {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+
+            if (setupAction == null) throw new ArgumentNullException(nameof(setupAction));
+
+            services.AddHttpContextAccessor();
+            services.AddSingleton<ILoggerProvider>(provider =>
+                new ElmahLoggerProvider(provider.GetService<IHttpContextAccessor>()));
+
+            foreach (var item in errorLogs)
+            {
+                services.AddSingleton(typeof(ErrorLog), item.GetType());
+            }
+            services.Configure(setupAction);
+            return services;
         }
     }
 
